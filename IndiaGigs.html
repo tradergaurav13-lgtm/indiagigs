@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IndiaGigs - Freelancing Made Simple in India</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --primary-orange: #FF6B35;
+      --primary-blue: #004E98;
+      --text-dark: #1F2937;
+      --text-light: #6B7280;
+      --white: #FFFFFF;
+      --bg-light: #F9FAFB;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --transition: all 0.3s ease;
+      --radius: 16px;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; scroll-behavior:smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-dark);
+      background: var(--white);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .logo { font-family: 'Poppins', sans-serif; }
+
+    /* Loader */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--white);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.5s ease;
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid var(--bg-light);
+      border-top: 5px solid var(--primary-orange);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    header {
+      position: fixed; top:0; width:100%;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .nav-container {
+      max-width:1200px;
+      margin:0 auto;
+      padding:1rem 2rem;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      position: relative;
+    }
+
+    .logo { font-size:1.5rem; font-weight:700; color:var(--primary-blue); text-decoration:none; }
+    .logo span { color:var(--primary-orange); }
+
+    .nav-links { display:flex; gap:2rem; list-style:none; }
+    .nav-links a { text-decoration:none; color:var(--text-dark); font-weight:600; transition:var(--transition); }
+    .nav-links a:hover { color:var(--primary-orange); }
+
+    .mobile-menu-btn { display:none; background:none; border:none; cursor:pointer; padding:6px; border-radius:10px; }
+    .mobile-menu-btn:hover { background: var(--bg-light); }
+
+    .mobile-menu {
+      display:none;
+      position:absolute;
+      right:2rem;
+      top:64px;
+      width:240px;
+      background:var(--white);
+      border:1px solid #eee;
+      border-radius:14px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      z-index:2000;
+    }
+    .mobile-menu a {
+      display:block;
+      padding:14px 16px;
+      text-decoration:none;
+      font-weight:700;
+      border-bottom:1px solid #f3f4f6;
+      color: var(--text-dark);
+    }
+    .mobile-menu a:hover { background: var(--bg-light); color: var(--primary-orange); }
+    .mobile-menu.active { display:block; }
+
+    /* Hero */
+    .hero {
+      padding:10rem 2rem 6rem;
+      background: radial-gradient(circle at top right, #fff4f0 0%, #ffffff 55%);
+      text-align:center;
+      min-height:80vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+    }
+    .hero h1 { font-size: clamp(2.2rem, 5vw, 4rem); color: var(--primary-blue); margin-bottom:0.75rem; }
+    .tagline { font-weight:800; color:var(--primary-blue); opacity:0.9; margin-bottom:0.25rem; }
+    .hero p { font-size:1.2rem; color:var(--text-light); max-width:650px; margin-bottom:2.2rem; }
+
+    .hero-btns { display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; margin-bottom:1.6rem; }
+
+    .btn {
+      padding:0.85rem 2rem;
+      border-radius:10px;
+      font-weight:800;
+      text-decoration:none;
+      transition: var(--transition);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      cursor:pointer;
+      border:none;
+    }
+    .btn-primary { background:var(--primary-orange); color:var(--white); box-shadow:0 4px 15px rgba(255,107,53,0.3); }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(255,107,53,0.4); }
+    .btn-secondary { background:var(--primary-blue); color:var(--white); box-shadow:0 4px 15px rgba(0,78,152,0.2); }
+    .btn-secondary:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,78,152,0.3); }
+
+    .trust-line {
+      display:inline-flex;
+      gap:0.5rem;
+      align-items:center;
+      color:var(--text-light);
+      font-weight:700;
+      font-size:0.95rem;
+      padding:10px 14px;
+      border-radius:999px;
+      background: rgba(255,255,255,0.75);
+      border:1px solid #f1f5f9;
+    }
+
+    /* Sections */
+    section { padding:6rem 2rem; max-width:1200px; margin:0 auto; }
+    .fullwidth-bg { width:100%; background: var(--bg-light); }
+
+    .section-header { text-align:center; margin-bottom:3.5rem; }
+    .section-header h2 { font-size:2.15rem; color:var(--primary-blue); margin-bottom:0.7rem; }
+    .section-header p { color:var(--text-light); font-weight:600; }
+
+    /* Services */
+    .services-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap:2rem;
+    }
+    .service-card {
+      background:var(--white);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      border:1px solid #f0f0f0;
+      padding:1.6rem 1.4rem;
+      text-align:center;
+      transition: var(--transition);
+    }
+    .service-card:hover { transform: translateY(-10px); border-color: var(--primary-orange); }
+    .service-icon {
+      width:60px; height:60px;
+      background:#fff4f0;
+      color:var(--primary-orange);
+      border-radius:14px;
+      display:flex; align-items:center; justify-content:center;
+      margin:0 auto 1.2rem;
+    }
+
+    /* How it works */
+    .how-it-works-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:3rem; text-align:center; }
+    .step-num {
+      width:44px; height:44px;
+      border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:900;
+      background:var(--primary-blue);
+      color:white;
+      margin:0 auto 1.2rem;
+      box-shadow: 0 10px 20px rgba(0,78,152,0.18);
+    }
+    .step-card p { color: var(--text-light); font-weight:600; }
+
+    /* Freelancers */
+    .freelancers-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap:2rem; }
+    .freelancer-card {
+      background:var(--white);
+      border-radius:18px;
+      padding:1.5rem;
+      box-shadow:var(--shadow);
+      border:1px solid #eee;
+      transition: var(--transition);
+    }
+    .freelancer-card:hover { transform: translateY(-6px); border-color: #ffd7c8; }
+    .profile-header { display:flex; gap:1rem; align-items:center; margin-bottom:0.8rem; }
+    .avatar {
+      width:60px; height:60px;
+      border-radius:50%;
+      background:#e5e7eb;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:900;
+      color:#4b5563;
+      flex-shrink:0;
+    }
+    .rating { color:#FBBF24; display:flex; gap:4px; margin:0.3rem 0 0.8rem; }
+    .price-line {
+      display:flex; justify-content:space-between; align-items:center;
+      margin-top:1.2rem; padding-top:1rem; border-top:1px solid #eee; gap:10px;
+    }
+    .price-tag { font-weight:900; font-size:1.1rem; color:var(--primary-blue); }
+
+    /* FAQ */
+    .faq-container { max-width:800px; margin:0 auto; }
+    .faq-item {
+      margin-bottom:1rem;
+      border:1px solid #eee;
+      border-radius:12px;
+      overflow:hidden;
+      background:var(--white);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.04);
+    }
+    .faq-question {
+      padding:1.25rem;
+      cursor:pointer;
+      display:flex; justify-content:space-between; align-items:center;
+      font-weight:900;
+      gap:14px;
+    }
+    .faq-answer {
+      padding:0 1.25rem;
+      max-height:0;
+      overflow:hidden;
+      transition: all 0.3s ease;
+      background: var(--bg-light);
+      color: var(--text-light);
+      font-weight:600;
+    }
+    .faq-item.active .faq-answer { padding:1.25rem; max-height:220px; }
+
+    /* Contact */
+    .contact-container { display:grid; grid-template-columns: 1fr 1.5fr; gap:4rem; }
+    .contact-info { display:flex; flex-direction:column; gap:1.3rem; }
+    .info-box { background: var(--bg-light); padding:1.2rem; border-radius:14px; border:1px solid #eef2f7; }
+
+    .whatsapp-btn {
+      background:#25D366;
+      color:white;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:0.5rem;
+      padding:1rem;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:900;
+      width:fit-content;
+    }
+    .contact-form {
+      background:var(--white);
+      padding:2rem;
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      border:1px solid #f3f4f6;
+    }
+    .form-group { margin-bottom:1.2rem; }
+    .form-group label { display:block; margin-bottom:0.5rem; font-weight:900; }
+    .form-group input, .form-group textarea {
+      width:100%;
+      padding:0.85rem;
+      border:1px solid #ddd;
+      border-radius:10px;
+      outline:none;
+      font-family: inherit;
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--primary-orange); }
+
+    /* Footer */
+    footer { padding:3rem 2rem; text-align:center; background:var(--primary-blue); color: rgba(255,255,255,0.85); font-weight:800; }
+
+    @media (max-width: 900px){
+      .contact-container { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px){
+      .nav-links { display:none; }
+      .mobile-menu-btn { display:block; }
+      .how-it-works-grid { grid-template-columns:1fr; gap:2rem; }
+      .hero-btns { flex-direction:column; width:100%; }
+      .hero p { font-size:1.05rem; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Loader -->
+  <div id="loader"><div class="spinner"></div></div>
+
+  <!-- CONFIG (ONLY CHANGE HERE) -->
+  <script>
+    const YOUR_WHATSAPP_NUMBER = "919135704401"; // Example: 919876543210
+    const YOUR_UPI_ID = "9135704401@fam"; // Example: gaurav@oksbi
+  </script>
+
+  <!-- Header -->
+  <header>
+    <nav class="nav-container">
+      <a href="#" class="logo" style="display:flex;align-items:center;gap:10px;">
+  <span style="
+    width:38px;height:38px;border-radius:12px;
+    background:linear-gradient(135deg,#004E98,#FF6B35);
+    display:flex;align-items:center;justify-content:center;
+    color:white;font-weight:900;font-family:Poppins,sans-serif;
+    box-shadow:0 10px 20px rgba(0,0,0,0.10);
+  ">IG</span>
+
+  <span style="font-size:1.5rem;font-weight:900;color:#004E98;font-family:Poppins,sans-serif;">
+    India<span style="color:#FF6B35;">Gigs</span>
+  </span>
+</a>
+      <ul class="nav-links">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#freelancers">Freelancers</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+
+      <button class="mobile-menu-btn" aria-label="Open menu">
+        <i data-lucide="menu"></i>
+      </button>
+
+      <div class="mobile-menu" id="mobileMenu">
+        <a href="#services">Services</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#freelancers">Freelancers</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="tagline">Freelancing Made Simple in India</div>
+    <h1>Hire Freelancers in India</h1>
+    <p>Fast delivery. Affordable pricing. Pay with UPI.</p>
+
+    <div class="hero-btns">
+      <!-- Post a Job -> WhatsApp -->
+      <a id="postJobBtn" target="_blank" class="btn btn-primary">
+        <i data-lucide="plus-circle"></i> Post a Job
+      </a>
+
+      <a href="#services" class="btn btn-secondary">
+        <i data-lucide="search"></i> Browse Services
+      </a>
+    </div>
+
+    <div class="trust-line">
+      <i data-lucide="check-circle" size="18"></i>
+      100% India-only • UPI Payments • Verified Sellers
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services">
+    <div class="section-header">
+      <h2>Our Popular Services</h2>
+      <p>Quality work at your fingertips</p>
+    </div>
+
+<div class="services-grid">
+  <div class="service-card serviceBtn" data-service="Thumbnail Design">
+    <div class="service-icon"><i data-lucide="image"></i></div>
+    <h3>Thumbnail Design</h3>
+    <p style="color:var(--text-light);font-weight:600;margin-top:8px;">High CTR thumbnails for creators</p>
+  </div>
+
+  <div class="service-card serviceBtn" data-service="Video Editing">
+    <div class="service-icon"><i data-lucide="video"></i></div>
+    <h3>Video Editing</h3>
+    <p style="color:var(--text-light);font-weight:600;margin-top:8px;">Reels & YouTube editing</p>
+  </div>
+
+  <div class="service-card serviceBtn" data-service="Logo Design">
+    <div class="service-icon"><i data-lucide="pen-tool"></i></div>
+    <h3>Logo Design</h3>
+    <p style="color:var(--text-light);font-weight:600;margin-top:8px;">Modern logos for brands</p>
+  </div>
+
+  <div class="service-card serviceBtn" data-service="Poster / Flyer Design">
+    <div class="service-icon"><i data-lucide="layout"></i></div>
+    <h3>Poster / Flyer Design</h3>
+    <p style="color:var(--text-light);font-weight:600;margin-top:8px;">Promotional creatives</p>
+  </div>
+
+  <div class="service-card serviceBtn" data-service="Resume & CV Making">
+    <div class="service-icon"><i data-lucide="file-text"></i></div>
+    <h3>Resume & CV Making</h3>
+    <p style="color:var(--text-light);font-weight:600;margin-top:8px;">ATS-friendly resumes</p>
+  </div>
+
+  <div class="service-card serviceBtn" data-service="Social Media Posts">
+    <div class="service-icon"><i data-lucide="share-2"></i></div>
+    <h3>Social Media Posts</h3>
+    <p style="color:var(--text-light);font-weight:600;margin-top:8px;">Insta post designs</p>
+  </div>
+
+  <div class="service-card serviceBtn" data-service="PPT Design">
+    <div class="service-icon"><i data-lucide="monitor"></i></div>
+    <h3>PPT Design</h3>
+    <p style="color:var(--text-light);font-weight:600;margin-top:8px;">Professional slides</p>
+  </div>
+
+  <div class="service-card serviceBtn" data-service="Website Design">
+    <div class="service-icon"><i data-lucide="code"></i></div>
+    <h3>Website Design</h3>
+    <p style="color:var(--text-light);font-weight:600;margin-top:8px;">Landing pages</p>
+  </div>
+</div>
+  </section>
+
+  <!-- How it works -->
+  <div class="fullwidth-bg">
+    <section id="how-it-works">
+      <div class="section-header">
+        <h2>How It Works</h2>
+        <p>Simple process to get your job done</p>
+      </div>
+
+      <div class="how-it-works-grid">
+        <div class="step-card"><div class="step-num">1</div><h3>Choose a Service</h3><p>Tell us your requirements.</p></div>
+        <div class="step-card"><div class="step-num">2</div><h3>Pay with UPI</h3><p>Instant payment using UPI apps.</p></div>
+        <div class="step-card"><div class="step-num">3</div><h3>Get Delivery Fast</h3><p>Work delivered on time.</p></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Freelancers -->
+  <section id="freelancers">
+    <div class="section-header">
+      <h2>Top Rated Freelancers</h2>
+      <p>Hire the best talent from across India</p>
+    </div>
+
+    <div class="freelancers-grid">
+      <div class="freelancer-card">
+        <div class="profile-header"><div class="avatar">AS</div><div><h3>Ankit Sharma</h3><p style="color:var(--text-light);font-weight:700;">Video Editor</p></div></div>
+        <div class="rating"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div>
+        <p style="color:var(--text-light);font-weight:600;">Reels, shorts & YouTube editing.</p>
+        <div class="price-line"><span class="price-tag">Starts ₹499</span><a class="btn btn-primary hireBtn" data-service="Video Editing" style="padding:0.55rem 1rem;">Hire Now</a></div>
+      </div>
+
+      <div class="freelancer-card">
+        <div class="profile-header"><div class="avatar">PM</div><div><h3>Priya Mishra</h3><p style="color:var(--text-light);font-weight:700;">Logo Designer</p></div></div>
+        <div class="rating"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div>
+        <p style="color:var(--text-light);font-weight:600;">Modern logos + brand identity.</p>
+        <div class="price-line"><span class="price-tag">Starts ₹999</span><a class="btn btn-primary hireBtn" data-service="Logo Design" style="padding:0.55rem 1rem;">Hire Now</a></div>
+      </div>
+
+      <div class="freelancer-card">
+        <div class="profile-header"><div class="avatar">RV</div><div><h3>Rohan Verma</h3><p style="color:var(--text-light);font-weight:700;">Web Developer</p></div></div>
+        <div class="rating"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star-half"></i></div>
+        <p style="color:var(--text-light);font-weight:600;">Landing pages & websites.</p>
+        <div class="price-line"><span class="price-tag">Starts ₹4,999</span><a class="btn btn-primary hireBtn" data-service="Website Design" style="padding:0.55rem 1rem;">Hire Now</a></div>
+      </div>
+
+      <div class="freelancer-card">
+        <div class="profile-header"><div class="avatar">GS</div><div><h3>Gaurav Singh</h3><p style="color:var(--text-light);font-weight:700;">Thumbnail Designer</p></div></div>
+        <div class="rating"><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i><i data-lucide="star"></i></div>
+        <p style="color:var(--text-light);font-weight:600;">High CTR thumbnails for YouTube.</p>
+        <div class="price-line"><span class="price-tag">Starts ₹199</span><a class="btn btn-primary hireBtn" data-service="Thumbnail Design" style="padding:0.55rem 1rem;">Hire Now</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="section-header">
+      <h2>FAQ</h2>
+      <p>Questions clients ask most often</p>
+    </div>
+
+    <div class="faq-container">
+      <div class="faq-item">
+        <div class="faq-question"><span>How do I place an order?</span><i data-lucide="chevron-down"></i></div>
+        <div class="faq-answer">Click Post a Job / Hire Now. WhatsApp will open. Send your requirement, pay via UPI and get delivery.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question"><span>How do payments work?</span><i data-lucide="chevron-down"></i></div>
+        <div class="faq-answer">We accept payments only via UPI (GPay/PhonePe/Paytm). You will receive UPI details on WhatsApp.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question"><span>How fast will I get delivery?</span><i data-lucide="chevron-down"></i></div>
+        <div class="faq-answer">Usually 24–48 hours depending on service and complexity.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <div class="fullwidth-bg">
+    <section id="contact">
+      <div class="section-header">
+        <h2>Contact</h2>
+        <p>Post a job or talk to us on WhatsApp</p>
+      </div>
+
+      <div class="contact-container">
+        <div class="contact-info">
+          <div class="info-box">
+            <h3 style="color:var(--primary-blue);">UPI Payment</h3>
+            <p style="color:var(--text-light);font-weight:700;margin-top:6px;">
+              Pay via UPI: <span id="upiText"></span>
+            </p>
+            <p style="color:var(--text-light);font-weight:600;">(Client will get full payment details on WhatsApp)</p>
+          </div>
+
+          <a id="whatsappBtn" class="whatsapp-btn" target="_blank">
+            <i data-lucide="message-circle"></i> WhatsApp Us
+          </a>
+        </div>
+
+        <div class="contact-form">
+          <h3 style="color:var(--primary-blue); margin-bottom:10px;">Quick Message</h3>
+          <p style="color:var(--text-light); font-weight:600; margin-bottom:16px;">
+            Prefer WhatsApp for fastest reply.
+          </p>
+          <a id="whatsappBtn2" class="btn btn-primary" target="_blank" style="width:100%;">
+            <i data-lucide="send"></i> Send WhatsApp Message
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    © IndiaGigs. All rights reserved.
+  </footer>
+
+  <script>
+    // loader hide
+    window.addEventListener('load', () => {
+      const loader = document.getElementById('loader');
+      loader.style.opacity = '0';
+      setTimeout(() => loader.style.display = 'none', 450);
+    });
+
+    // lucide icons
+    lucide.createIcons();
+
+    // mobile menu
+    const mobileBtn = document.querySelector('.mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('active'));
+    document.querySelectorAll('#mobileMenu a').forEach(link => {
+      link.addEventListener('click', () => mobileMenu.classList.remove('active'));
+    });
+    document.addEventListener('click', (e) => {
+      const isInside = mobileMenu.contains(e.target) || mobileBtn.contains(e.target);
+      if (!isInside) mobileMenu.classList.remove('active');
+    });
+
+    // FAQ toggle
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.querySelector('.faq-question').addEventListener('click', () => {
+        item.classList.toggle('active');
+      });
+    });
+
+    // Set UPI text
+    document.getElementById("upiText").innerText = YOUR_UPI_ID;
+
+    // WhatsApp links
+    function waLink(text){
+      return `https://wa.me/${YOUR_WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
+    }
+
+    // Post a Job button -> WhatsApp
+    document.getElementById("postJobBtn").href = waLink(
+      "Hi IndiaGigs, I want to post a job. Service: ____  Budget: ₹____  Delivery time: ____"
+    );
+
+    // WhatsApp buttons
+    document.getElementById("whatsappBtn").href = waLink("Hi IndiaGigs, I want to hire a freelancer.");
+    document.getElementById("whatsappBtn2").href = waLink("Hi IndiaGigs, I want to hire a freelancer.");
+
+    // Hire buttons
+
+    document.querySelectorAll(".hireBtn").forEach(btn => {
+      btn.href = waLink("Hi IndiaGigs, I want to hire a freelancer. Service: " + btn.dataset.service + "  Budget: ₹____");
+      btn.setAttribute("target","_blank");
+    });
+// Service card click -> WhatsApp
+document.querySelectorAll(".serviceBtn").forEach(card => {
+  card.style.cursor = "pointer";
+  card.addEventListener("click", () => {
+    const service = card.dataset.service;
+    window.open(
+      waLink("Hi IndiaGigs, I want to order: " + service + ". Budget: ₹____  Delivery time: ____"),
+      "_blank"
+    );
+  });
+});
+  </script>
+</body>
+</html>
